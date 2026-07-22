@@ -42,8 +42,8 @@ const sendReviewEmail = async ({ clientEmail, clientName, projectTitle, reviewLi
             Hi <strong style="color:#06b6d4;">${clientName}</strong>,
           </p>
           <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 24px 0;">
-            Thank you for your collaboration! I'd love to hear your feedback on the project 
-            <strong style="color:#e2e8f0;">"${projectTitle}"</strong>. Your review helps showcase the quality of our work together.
+            Thank you for giving me this opportunity! I'd love to hear your feedback on the project 
+            <strong style="color:#e2e8f0;">"${projectTitle}"</strong>. Your review helps showcase the quality of my work.
           </p>
           
           <!-- CTA Button -->

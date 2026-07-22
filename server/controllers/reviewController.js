@@ -53,7 +53,7 @@ const sendReviewToken = async (req, res) => {
     });
   } catch (error) {
     console.error('Send review token error:', error);
-    res.status(500).json({ message: 'Failed to send review request' });
+    res.status(500).json({ message: 'Failed to send review request', error: error.message });
   }
 };
 
@@ -178,7 +178,8 @@ const getAllTokens = async (req, res) => {
 
     res.json(tokens);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('getAllTokens error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
