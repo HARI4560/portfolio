@@ -1,3 +1,5 @@
+import https from 'https';
+
 /**
  * Universal mail sender using Brevo API (bypasses SMTP firewalls completely)
  */
@@ -8,23 +10,45 @@ const sendMailToClient = async (mailOptions) => {
 
   const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.ADMIN_EMAIL;
 
-  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: {
-      'api-key': process.env.BREVO_API_KEY,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      sender: { name: 'Portfolio', email: senderEmail },
-      to: [{ email: mailOptions.to }],
-      subject: mailOptions.subject,
-      htmlContent: mailOptions.html,
-    }),
+  const payload = JSON.stringify({
+    sender: { name: 'Portfolio', email: senderEmail },
+    to: [{ email: mailOptions.to }],
+    subject: mailOptions.subject,
+    htmlContent: mailOptions.html,
   });
 
-  if (!response.ok) {
-    throw new Error(`Brevo API Error: ${await response.text()}`);
-  }
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.brevo.com',
+      port: 443,
+      path: '/v3/smtp/email',
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve();
+        } else {
+          reject(new Error(`Brevo API Error: ${data}`));
+        }
+      });
+    });
+
+    req.on('error', (e) => {
+      reject(new Error(`Brevo API Request Error: ${e.message}`));
+    });
+
+    req.write(payload);
+    req.end();
+  });
 };
 
 /**
