@@ -29,7 +29,11 @@ app.use(helmet({
 app.use(mongoSanitize());
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'https://harish-k.netlify.app',
+    process.env.CLIENT_URL
+  ].filter(Boolean),
   credentials: true,
 }));
 
