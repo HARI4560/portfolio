@@ -1,23 +1,36 @@
-import nodemailer from 'nodemailer';
+/**
+ * Universal mail sender using Brevo API (bypasses SMTP firewalls completely)
+ */
+const sendMailToClient = async (mailOptions) => {
+  if (!process.env.BREVO_API_KEY) {
+    throw new Error('Missing BREVO_API_KEY in environment variables');
+  }
 
-const createTransporter = () => {
-  const port = parseInt(process.env.SMTP_PORT, 10) || 587;
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: port,
-    secure: port === 465, // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.ADMIN_EMAIL;
+
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'api-key': process.env.BREVO_API_KEY,
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      sender: { name: 'Portfolio', email: senderEmail },
+      to: [{ email: mailOptions.to }],
+      subject: mailOptions.subject,
+      htmlContent: mailOptions.html,
+    }),
   });
+
+  if (!response.ok) {
+    throw new Error(`Brevo API Error: ${await response.text()}`);
+  }
 };
 
 /**
  * Send a review request email to a client
  */
 const sendReviewEmail = async ({ clientEmail, clientName, projectTitle, reviewLink, expiresAt }) => {
-  const transporter = createTransporter();
   const expiryDate = new Date(expiresAt).toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
@@ -79,20 +92,18 @@ const sendReviewEmail = async ({ clientEmail, clientName, projectTitle, reviewLi
   `;
 
   const mailOptions = {
-    from: `"Portfolio Review" <${process.env.SMTP_USER}>`,
     to: clientEmail,
     subject: `Review Request: ${projectTitle}`,
     html: htmlTemplate,
   };
 
-  await transporter.sendMail(mailOptions);
+  await sendMailToClient(mailOptions);
 };
 
 /**
  * Send a security alert email to the admin
  */
 const sendSecurityAlertEmail = async ({ adminEmail, eventType, ipAddress, userAgent, details }) => {
-  const transporter = createTransporter();
 
   const htmlTemplate = `
     <!DOCTYPE html>
@@ -129,14 +140,13 @@ const sendSecurityAlertEmail = async ({ adminEmail, eventType, ipAddress, userAg
   `;
 
   const mailOptions = {
-    from: `"Portfolio Security" <${process.env.SMTP_USER}>`,
     to: adminEmail,
     subject: `🚨 Security Alert: ${eventType}`,
     html: htmlTemplate,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailToClient(mailOptions);
   } catch (error) {
     console.error('Failed to send security alert email:', error.message);
   }
