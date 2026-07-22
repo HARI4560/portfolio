@@ -11,7 +11,7 @@ const sendMailToClient = async (mailOptions) => {
   const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.ADMIN_EMAIL;
 
   const payload = JSON.stringify({
-    sender: { name: 'Portfolio', email: senderEmail },
+    sender: { name: 'portfolio', email: senderEmail },
     to: [{ email: mailOptions.to }],
     subject: mailOptions.subject,
     htmlContent: mailOptions.html,
