@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import https from 'https';
 import express, { json, urlencoded } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -91,4 +92,14 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
+  
+  // Keep-alive ping for Render free tier (every 14 minutes)
+  const backendUrl = 'https://portfolio-h1rj.onrender.com/api/health';
+  setInterval(() => {
+    https.get(backendUrl, (res) => {
+      console.log(`[Keep-Alive] Pinged self. Status: ${res.statusCode}`);
+    }).on('error', (err) => {
+      console.error('[Keep-Alive] Error pinging self:', err.message);
+    });
+  }, 14 * 60 * 1000);
 });
