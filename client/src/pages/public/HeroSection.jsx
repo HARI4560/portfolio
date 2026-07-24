@@ -76,7 +76,7 @@ const HeroSection = () => {
       </div>
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: 1200, margin: '0 auto', padding: '0 24px', width: '100%' }}>
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: 1200, margin: '0 auto', padding: '100px 24px 120px 24px', width: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap-reverse', gap: '40px' }}>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', maxWidth: '700px', flex: '1 1 500px' }}>
@@ -169,8 +169,8 @@ const HeroSection = () => {
               style={{ flex: '1 1 300px', display: 'flex', justifyContent: 'center' }}
             >
               <div style={{
-                width: 'clamp(250px, 30vw, 400px)',
-                height: 'clamp(250px, 30vw, 400px)',
+                width: 'clamp(200px, 50vw, 400px)',
+                height: 'clamp(200px, 50vw, 400px)',
                 borderRadius: '50%',
                 overflow: 'hidden',
                 border: '4px solid var(--color-border-subtle)',
@@ -204,7 +204,7 @@ const HeroSection = () => {
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
         >
           <div style={{
-            width: 30, height: 46, border: '2px solid var(--color-border-subtle)', borderRadius: 20,
+            width: 25, height: 30, border: '2px solid var(--color-border-subtle)', borderRadius: 20,
             display: 'flex', justifyContent: 'center', paddingTop: 8
           }}>
             <div style={{ width: 4, height: 8, background: 'var(--color-accent-cyan)', borderRadius: 4 }} />
